@@ -62,17 +62,13 @@ def ask(
     query: str = typer.Argument(..., help="Your prompt"),
     image: Path = typer.Option(None, "--image", "-i", help="Path to image"),
     file: Path = typer.Option(None, "--file", "-f", help="Path to document"),
-    category: str = typer.Option(None, "--category", "-c", 
-                                help="AI task category: reasoning, coding, general"),
-    provider_filter: str = typer.Option(None, "--filter-provider", 
-                                       help="Filter cache by AI provider"),
-    use_provider: str = typer.Option(None, "--provider", "-p",
-                                    help="Force specific AI provider: openai, anthropic, gemini, ollama"),
-    use_model: str = typer.Option(None, "--model", "-m",
-                                 help="Force specific model (e.g., gpt-4o, claude-3-5-sonnet-20241022, gemini-pro)"),
+    category: str = typer.Option(None, "--category", "-c", help="AI task category: reasoning, coding, general"),
+    provider_filter: str = typer.Option(None, "--filter-provider", help="Filter cache by AI provider"),
+    use_provider: str = typer.Option(None, "--provider", "-p", help="Force specific AI provider: openai, anthropic, google, gemini, ollama"),
+    use_model: str = typer.Option(None, "--model", "-m", help="Force specific model (e.g., gpt-4o, claude-3-5-sonnet-20241022, gemini-pro)"),
     k: int = typer.Option(5, help="Top-K retrieved for context"),
     threshold: float = typer.Option(0.85, help="Similarity threshold for cache hit (0-1)"),
-    no_cache: bool = typer.Option(False, "--no-cache", help="Skip semantic cache lookup"),
+    no_cache: bool = typer.Option(False, "--no-cache", help="Skip semantic cache lookup")
 ):
     """Ask a question with intelligent AI provider selection, semantic caching, and RAG enhancement"""
     
@@ -203,6 +199,36 @@ def stats():
                 
     except Exception as e:
         logger.error(f"Error getting statistics: {e}")
+        typer.echo(f"Error: {str(e)}", err=True)
+
+
+@app.command()
+def providers():
+    """List available AI providers and their models"""
+    try:
+        from config.setting import AVAILABLE_PROVIDERS, get_api_key_for_provider
+        
+        typer.echo("🤖 Available AI Providers:")
+        typer.echo()
+        
+        for provider, info in AVAILABLE_PROVIDERS.items():
+            api_key = get_api_key_for_provider(provider)
+            status = "✅ Configured" if api_key else "❌ Missing API Key"
+            
+            typer.echo(f"📋 {provider.upper()} - {status}")
+            typer.echo(f"   API Key Required: {info['api_key_env'] or 'None (Local)'}")
+            typer.echo(f"   Available Models:")
+            for model in info['models']:
+                typer.echo(f"     • {model}")
+            typer.echo()
+        
+        typer.echo("💡 Usage Examples:")
+        typer.echo("  python main.py ask 'Hello' --provider openai")
+        typer.echo("  python main.py ask 'Hello' --provider google --model gemini-1.5-pro")
+        typer.echo("  python main.py ask 'Hello' --provider anthropic")
+        
+    except Exception as e:
+        logger.error(f"Error listing providers: {e}")
         typer.echo(f"Error: {str(e)}", err=True)
 
 

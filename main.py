@@ -3,7 +3,7 @@
 AI CLI Tool - Multi-provider AI assistant with semantic caching and RAG
 
 This is the main entry point for the AI CLI Tool. It provides a command-line interface
-for interacting with multiple AI providers (OpenAI, Anthropic, Google Gemini, Ollama)
+for interacting with multiple AI providers (OpenAI, Anthropic, Google/Gemini, Ollama)
 with intelligent provider selection, semantic caching, and RAG capabilities.
 
 Features:
@@ -18,6 +18,7 @@ Usage:
     python main.py ask "Your question here"
     python main.py ask "Debug this code" --provider anthropic --model claude-3-5-sonnet-20241022
     python main.py ask "Explain this image" --image photo.jpg
+    python main.py ask "Write a Python function" --provider google  # or --provider gemini
     python main.py providers  # List available providers
     python main.py stats      # Show usage statistics
     python main.py configure  # Show current configuration

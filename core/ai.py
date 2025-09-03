@@ -90,6 +90,12 @@ class AIClient:
         
         return "general"
     
+    def _resolve_provider_alias(self, provider: str) -> str:
+        """Resolve provider aliases to their actual provider names"""
+        from config.setting import AVAILABLE_PROVIDERS
+        provider_info = AVAILABLE_PROVIDERS.get(provider, {})
+        return provider_info.get("alias_for", provider)
+    
     def _get_provider_config(self, category: str, override_provider: Optional[str] = None, override_model: Optional[str] = None) -> Dict[str, Any]:
         """Get provider configuration for a specific category with optional overrides"""
         config = AI_PROVIDERS.get(category, AI_PROVIDERS["general"]).copy()
@@ -98,8 +104,11 @@ class AIClient:
         if override_provider:
             from config.setting import AVAILABLE_PROVIDERS, get_api_key_for_provider
             
+            # Resolve any aliases
+            actual_provider = self._resolve_provider_alias(override_provider)
+            
             if override_provider in AVAILABLE_PROVIDERS:
-                config["provider"] = override_provider
+                config["provider"] = actual_provider  # Use actual provider for LiteLLM
                 config["api_key"] = get_api_key_for_provider(override_provider)
                 
                 # Set default model if not specified
@@ -188,10 +197,18 @@ class AIClient:
         
         try:
             # Call litellm with appropriate model
-            model_name = f"{config['provider']}/{config['model']}"
+            # Special handling for different providers based on LiteLLM requirements
+            provider = config['provider']
+            model = config['model']
+            
+            if provider == "google":
+                # For Google/Gemini, use the vertex_ai or gemini prefix
+                model_name = f"gemini/{model}"
+            else:
+                model_name = f"{provider}/{model}"
             
             # Log AI request
-            log_ai_request(config['provider'], config['model'], category)
+            log_ai_request(provider, model, category)
             
             response = litellm.completion(
                 model=model_name,

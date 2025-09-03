@@ -18,7 +18,8 @@ source venv/bin/activate  # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 
 # Start vector database
-docker run -d -p 6333:6333 qdrant/qdrant
+cd docker
+docker compose up -d
 
 # Configure API keys
 cp .env.example .env

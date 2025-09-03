@@ -58,6 +58,11 @@ AVAILABLE_PROVIDERS: Dict[str, Dict[str, Any]] = {
         "models": ["gemini-1.5-pro", "gemini-1.5-flash", "gemini-pro"],
         "api_key_env": "GEMINI_API_KEY"
     },
+    "gemini": {  # Alias for google provider for better user experience
+        "models": ["gemini-1.5-pro", "gemini-1.5-flash", "gemini-pro"],
+        "api_key_env": "GEMINI_API_KEY",
+        "alias_for": "google"  # Indicates this is an alias
+    },
     "ollama": {
         "models": ["llama3", "llama3.1", "codellama", "mistral", "phi3"],
         "api_key_env": None  # Ollama doesn't require API key
