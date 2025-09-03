@@ -1,0 +1,9 @@
+typer
+qdrant-client
+sentence-transformers
+python-dotenv
+pillow
+pymupdf
+litellm
+tenacity
+anthropic
